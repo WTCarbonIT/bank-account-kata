@@ -2,6 +2,7 @@ package fr.william.services;
 
 import fr.william.entities.Operation;
 import fr.william.exceptions.AmountInvalidException;
+import fr.william.exceptions.InsufficientBalanceException;
 import fr.william.repositories.BankAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.william.TestFixtures.*;
-import static fr.william.TestFixtures.sampleWithdrawalOperation;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,4 +78,21 @@ public class CurrentAccountBankAccountServiceShould {
         order.verifyNoMoreInteractions();
     }
 
+    @Test
+    void throw_amount_invalid_exception_when_amount_is_negative_withdrawal() {
+        assertThrows(AmountInvalidException.class, () -> currentAccountBankAccountService.withdraw(sampleAccountId, sampleNegativeAmount));
+
+        verifyNoInteractions(bankAccountRepository);
+    }
+
+    @Test
+    void throw_insufficient_balance_exception_when_balance_is_not_enough_withdrawal() {
+        when(bankAccountRepository.getBalance(sampleAccountId)).thenReturn(sampleLowBalance);
+
+        assertThrows(InsufficientBalanceException.class, () -> currentAccountBankAccountService.withdraw(sampleAccountId, sampleAmount));
+
+        InOrder order = inOrder(bankAccountRepository);
+        order.verify(bankAccountRepository).getBalance(sampleAccountId);
+        order.verifyNoMoreInteractions();
+    }
 }
