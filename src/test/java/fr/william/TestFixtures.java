@@ -16,5 +16,7 @@ public class TestFixtures {
     public static BigDecimal sampleNegativeAmount = new BigDecimal("-50.00");
     public static BigDecimal sampleBalance = new BigDecimal("50.00");
     public static BigDecimal sampleDepositBalance = new BigDecimal("100.00");
+    public static BigDecimal sampleWithdrawalBalance = new BigDecimal("0.00");
     public static Operation sampleDepositOperation = new Operation(sampleAccountId, OperationType.DEPOSIT, sampleDate, sampleAmount, sampleDepositBalance);
+    public static Operation sampleWithdrawalOperation = new Operation(sampleAccountId, OperationType.WITHDRAWAL, sampleDate, sampleAmount, sampleWithdrawalBalance);
 }

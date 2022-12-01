@@ -35,4 +35,13 @@ public class CurrentAccountBankAccountService implements BankAccountService {
         operation = bankAccountRepository.addOperation(accountId, operation);
         return operation;
     }
+
+    @Override
+    public Operation withdraw(int accountId, BigDecimal amount) {
+        amount = amount.setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal balance = bankAccountRepository.getBalance(accountId);
+        Operation operation = new Operation(accountId, OperationType.WITHDRAWAL, LocalDateTime.now(clock) ,amount, balance.subtract(amount));
+        operation = bankAccountRepository.addOperation(accountId, operation);
+        return operation;
+    }
 }

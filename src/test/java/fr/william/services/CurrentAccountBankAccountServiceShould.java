@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.william.TestFixtures.*;
-import static fr.william.TestFixtures.sampleDepositOperation;
+import static fr.william.TestFixtures.sampleWithdrawalOperation;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,6 +56,26 @@ public class CurrentAccountBankAccountServiceShould {
         assertThrows(AmountInvalidException.class, () -> currentAccountBankAccountService.deposit(sampleAccountId, sampleNegativeAmount));
 
         verifyNoInteractions(bankAccountRepository);
+    }
+
+    @Test
+    void withdraw_money_when_amount_is_valid() {
+        when(bankAccountRepository.getBalance(sampleAccountId)).thenReturn(sampleBalance);
+        when(bankAccountRepository.addOperation(eq(sampleAccountId), any(Operation.class))).thenReturn(sampleWithdrawalOperation);
+
+        Operation output = assertDoesNotThrow(() -> currentAccountBankAccountService.withdraw(sampleAccountId, sampleAmount));
+
+        assertThat(output).usingRecursiveComparison().isEqualTo(sampleWithdrawalOperation);
+        InOrder order = inOrder(bankAccountRepository);
+        order.verify(bankAccountRepository).getBalance(sampleAccountId);
+        order.verify(bankAccountRepository).addOperation(sampleAccountId, new Operation(
+                sampleWithdrawalOperation.getAccountId(),
+                sampleWithdrawalOperation.getData(),
+                sampleWithdrawalOperation.getDate(),
+                sampleWithdrawalOperation.getAmount(),
+                sampleWithdrawalOperation.getBalance()
+        ));
+        order.verifyNoMoreInteractions();
     }
 
 }
