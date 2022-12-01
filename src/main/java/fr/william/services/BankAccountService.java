@@ -9,4 +9,5 @@ import java.math.BigDecimal;
 public interface BankAccountService {
     Operation deposit(int accountId, BigDecimal amount) throws AmountInvalidException;
     Operation withdraw(int accountId, BigDecimal amount) throws AmountInvalidException, InsufficientBalanceException;
+    void printAccountStatement(int accountId);
 }

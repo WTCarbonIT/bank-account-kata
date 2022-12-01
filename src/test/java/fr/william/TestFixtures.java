@@ -27,7 +27,6 @@ public class TestFixtures {
             "|" + sampleDepositOperation.getAmount().toString() +
             "|" + sampleDepositOperation.getBalance().toString() +
             "|" + "\n";
-
     public static String sampleFormattedDepositAndWithdrawalOperation = "|OPERATION|DATE|AMOUNT|BALANCE|\n" +
             "|" + sampleDepositOperation.getData().toString() +
             "|" + sampleDepositOperation.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
@@ -39,6 +38,5 @@ public class TestFixtures {
             "|" + sampleWithdrawalOperation.getAmount().toString() +
             "|" + sampleWithdrawalOperation.getBalance().toString() +
             "|" + "\n";
-
     public static String sampleFormattedEmptyListOperation =  "|OPERATION|DATE|AMOUNT|BALANCE|\n";
 }

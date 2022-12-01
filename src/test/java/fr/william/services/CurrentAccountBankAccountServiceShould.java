@@ -4,12 +4,15 @@ import fr.william.entities.Operation;
 import fr.william.exceptions.AmountInvalidException;
 import fr.william.exceptions.InsufficientBalanceException;
 import fr.william.repositories.BankAccountRepository;
+import fr.william.utils.TerminalStatementPrinter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static fr.william.TestFixtures.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -23,12 +26,13 @@ import static org.mockito.Mockito.*;
 public class CurrentAccountBankAccountServiceShould {
     @Mock
     private BankAccountRepository bankAccountRepository;
-
+    @Mock
+    private TerminalStatementPrinter terminalStatementPrinter;
     private CurrentAccountBankAccountService currentAccountBankAccountService;
 
     @BeforeEach
     void initialize_bank_account() {
-        currentAccountBankAccountService = new CurrentAccountBankAccountService(bankAccountRepository, sampleClock);
+        currentAccountBankAccountService = new CurrentAccountBankAccountService(bankAccountRepository, terminalStatementPrinter, sampleClock);
     }
 
     @Test
@@ -93,6 +97,18 @@ public class CurrentAccountBankAccountServiceShould {
 
         InOrder order = inOrder(bankAccountRepository);
         order.verify(bankAccountRepository).getBalance(sampleAccountId);
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void print_list_of_operations() {
+        when(bankAccountRepository.findAllOperations(sampleAccountId)).thenReturn(List.of(sampleDepositOperation, sampleWithdrawalOperation));
+
+        assertDoesNotThrow(() -> currentAccountBankAccountService.printAccountStatement(sampleAccountId));
+
+        InOrder order = inOrder(bankAccountRepository, terminalStatementPrinter);
+        order.verify(bankAccountRepository).findAllOperations(sampleAccountId);
+        order.verify(terminalStatementPrinter).print(List.of(sampleDepositOperation, sampleWithdrawalOperation));
         order.verifyNoMoreInteractions();
     }
 }

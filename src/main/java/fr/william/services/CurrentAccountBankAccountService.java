@@ -5,23 +5,28 @@ import fr.william.enums.OperationType;
 import fr.william.exceptions.AmountInvalidException;
 import fr.william.exceptions.InsufficientBalanceException;
 import fr.william.repositories.BankAccountRepository;
+import fr.william.utils.TerminalStatementPrinter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CurrentAccountBankAccountService implements BankAccountService {
     private final BankAccountRepository bankAccountRepository;
+    private final TerminalStatementPrinter terminalStatementPrinter;
     private final Clock clock;
 
-    CurrentAccountBankAccountService(BankAccountRepository bankAccountRepository, Clock clock) {
+    CurrentAccountBankAccountService(BankAccountRepository bankAccountRepository, TerminalStatementPrinter terminalStatementPrinter, Clock clock) {
         this.bankAccountRepository = bankAccountRepository;
+        this.terminalStatementPrinter = terminalStatementPrinter;
         this.clock = clock;
     }
 
-    public CurrentAccountBankAccountService(BankAccountRepository bankAccountRepository) {
+    public CurrentAccountBankAccountService(BankAccountRepository bankAccountRepository, TerminalStatementPrinter terminalStatementPrinter) {
         this.bankAccountRepository = bankAccountRepository;
+        this.terminalStatementPrinter = terminalStatementPrinter;
         this.clock = Clock.systemDefaultZone();
     }
 
@@ -46,6 +51,12 @@ public class CurrentAccountBankAccountService implements BankAccountService {
             throw new InsufficientBalanceException();
         }
         return createAndSaveOperation(accountId, OperationType.WITHDRAWAL, amount, balance.subtract(amount));
+    }
+
+    @Override
+    public void printAccountStatement(int accountId) {
+        List<Operation> operations = bankAccountRepository.findAllOperations(accountId);
+        terminalStatementPrinter.print(operations);
     }
 
     private Operation createAndSaveOperation(int accountId, OperationType withdrawal, BigDecimal amount, BigDecimal balance) {
