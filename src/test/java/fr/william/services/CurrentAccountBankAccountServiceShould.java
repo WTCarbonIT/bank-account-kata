@@ -1,6 +1,7 @@
 package fr.william.services;
 
 import fr.william.entities.Operation;
+import fr.william.exceptions.AmountInvalidException;
 import fr.william.repositories.BankAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,10 @@ import static fr.william.TestFixtures.*;
 import static fr.william.TestFixtures.sampleDepositOperation;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CurrentAccountBankAccountServiceShould {
@@ -48,6 +49,13 @@ public class CurrentAccountBankAccountServiceShould {
                 sampleDepositOperation.getBalance()
         ));
         order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void throw_amount_invalid_exception_when_amount_is_negative_deposit() {
+        assertThrows(AmountInvalidException.class, () -> currentAccountBankAccountService.deposit(sampleAccountId, sampleNegativeAmount));
+
+        verifyNoInteractions(bankAccountRepository);
     }
 
 }
