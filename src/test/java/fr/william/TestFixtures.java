@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class TestFixtures {
     public static Integer sampleAccountId = 1;
@@ -20,4 +21,24 @@ public class TestFixtures {
     public static BigDecimal sampleWithdrawalBalance = new BigDecimal("0.00");
     public static Operation sampleDepositOperation = new Operation(sampleAccountId, OperationType.DEPOSIT, sampleDate, sampleAmount, sampleDepositBalance);
     public static Operation sampleWithdrawalOperation = new Operation(sampleAccountId, OperationType.WITHDRAWAL, sampleDate, sampleAmount, sampleWithdrawalBalance);
+    public static String sampleFormattedDepositOperation = "|OPERATION|DATE|AMOUNT|BALANCE|\n" +
+            "|" + sampleDepositOperation.getData().toString() +
+            "|" + sampleDepositOperation.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+            "|" + sampleDepositOperation.getAmount().toString() +
+            "|" + sampleDepositOperation.getBalance().toString() +
+            "|" + "\n";
+
+    public static String sampleFormattedDepositAndWithdrawalOperation = "|OPERATION|DATE|AMOUNT|BALANCE|\n" +
+            "|" + sampleDepositOperation.getData().toString() +
+            "|" + sampleDepositOperation.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+            "|" + sampleDepositOperation.getAmount().toString() +
+            "|" + sampleDepositOperation.getBalance().toString() +
+            "|" + "\n" +
+            "|" + sampleWithdrawalOperation.getData().toString() +
+            "|" + sampleWithdrawalOperation.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+            "|" + sampleWithdrawalOperation.getAmount().toString() +
+            "|" + sampleWithdrawalOperation.getBalance().toString() +
+            "|" + "\n";
+
+    public static String sampleFormattedEmptyListOperation =  "|OPERATION|DATE|AMOUNT|BALANCE|\n";
 }
